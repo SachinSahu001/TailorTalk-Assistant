@@ -10,13 +10,13 @@ from googleapiclient.errors import HttpError
 load_dotenv()
 
 # ✅ Load service account JSON from environment
-SERVICE_ACCOUNT_INFO = os.getenv("GOOGLE_CREDENTIALS")
-if not SERVICE_ACCOUNT_INFO:
+SERVICE_ACCOUNT_FILE = "backend/credentials/service_account.json"
+if not SERVICE_ACCOUNT_FILE:
     raise EnvironmentError("❌ GOOGLE_CREDENTIALS not set in environment.")
 
 SCOPES = ['https://www.googleapis.com/auth/calendar']
 credentials = service_account.Credentials.from_service_account_info(
-    json.loads(SERVICE_ACCOUNT_INFO), scopes=SCOPES
+    json.loads(SERVICE_ACCOUNT_FILE), scopes=SCOPES
 )
 
 # ✅ Setup Google Calendar service
