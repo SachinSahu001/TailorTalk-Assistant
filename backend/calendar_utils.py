@@ -6,17 +6,19 @@ from google.oauth2 import service_account
 from googleapiclient.discovery import build
 from googleapiclient.errors import HttpError
 
-# ✅ Load environment variables
+# ✅ Load environment variables from .env
 load_dotenv()
 
-# ✅ Load service account JSON from environment
-SERVICE_ACCOUNT_FILE = "backend/credentials/service_account.json"
-if not SERVICE_ACCOUNT_FILE:
+# ✅ Load service account JSON from environment variable
+GOOGLE_CREDENTIALS = os.getenv("GOOGLE_CREDENTIALS")
+if not GOOGLE_CREDENTIALS:
     raise EnvironmentError("❌ GOOGLE_CREDENTIALS not set in environment.")
 
 SCOPES = ['https://www.googleapis.com/auth/calendar']
+
+# ✅ Parse credentials JSON string
 credentials = service_account.Credentials.from_service_account_info(
-    json.loads(SERVICE_ACCOUNT_FILE), scopes=SCOPES
+    json.loads(GOOGLE_CREDENTIALS), scopes=SCOPES
 )
 
 # ✅ Setup Google Calendar service
@@ -28,6 +30,7 @@ TIMEZONE = os.getenv("TIMEZONE", "Asia/Kolkata")
 
 
 def get_free_slots(start: datetime, end: datetime):
+    """Returns a list of available 30-minute time slots."""
     try:
         body = {
             "timeMin": start.isoformat(),
@@ -61,6 +64,7 @@ def get_free_slots(start: datetime, end: datetime):
 
 
 def create_event(start: datetime, end: datetime):
+    """Creates a 30-minute Google Calendar event."""
     try:
         event = {
             "summary": "Meeting with TailorTalk Bot",
