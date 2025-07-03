@@ -1,4 +1,5 @@
 import os
+import json
 from datetime import datetime, timedelta
 from dotenv import load_dotenv
 from google.oauth2 import service_account
@@ -8,30 +9,30 @@ from googleapiclient.errors import HttpError
 # ✅ Load environment variables
 load_dotenv()
 
-# ✅ Load service account JSON (from env string if needed)
-SERVICE_ACCOUNT_FILE = "credentials/service_account.json"
-SCOPES = ['https://www.googleapis.com/auth/calendar']
+# ✅ Load service account JSON from environment
+SERVICE_ACCOUNT_INFO = os.getenv("GOOGLE_CREDENTIALS")
+if not SERVICE_ACCOUNT_INFO:
+    raise EnvironmentError("❌ GOOGLE_CREDENTIALS not set in environment.")
 
-credentials = service_account.Credentials.from_service_account_file(
-    SERVICE_ACCOUNT_FILE, scopes=SCOPES
+SCOPES = ['https://www.googleapis.com/auth/calendar']
+credentials = service_account.Credentials.from_service_account_info(
+    json.loads(SERVICE_ACCOUNT_INFO), scopes=SCOPES
 )
 
 # ✅ Setup Google Calendar service
 service = build("calendar", "v3", credentials=credentials)
 
-# ✅ Calendar ID to use
+# ✅ Calendar ID and Timezone
 calendar_id = os.getenv("GOOGLE_CALENDAR_ID", "primary")
+TIMEZONE = os.getenv("TIMEZONE", "Asia/Kolkata")
 
 
 def get_free_slots(start: datetime, end: datetime):
-    """
-    Returns a list of available 30-minute time slots between `start` and `end`.
-    """
     try:
         body = {
             "timeMin": start.isoformat(),
             "timeMax": end.isoformat(),
-            "timeZone": "Asia/Kolkata",
+            "timeZone": TIMEZONE,
             "items": [{"id": calendar_id}]
         }
 
@@ -60,19 +61,16 @@ def get_free_slots(start: datetime, end: datetime):
 
 
 def create_event(start: datetime, end: datetime):
-    """
-    Creates a calendar event between `start` and `end`.
-    """
     try:
         event = {
             "summary": "Meeting with TailorTalk Bot",
             "start": {
                 "dateTime": start.isoformat(),
-                "timeZone": "Asia/Kolkata"
+                "timeZone": TIMEZONE
             },
             "end": {
                 "dateTime": end.isoformat(),
-                "timeZone": "Asia/Kolkata"
+                "timeZone": TIMEZONE
             }
         }
 
