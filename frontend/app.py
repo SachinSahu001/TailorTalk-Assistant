@@ -35,7 +35,7 @@ if user_input:
     with st.chat_message("assistant"):
         with st.spinner("Thinking..."):
             try:
-                res = requests.post("http://localhost:8000/chat", json={"message": user_input})
+                res = requests.post("https://tailortalk-backend-production.up.railway.app/chat", json={"message": user_input})
                 if res.status_code == 200:
                     reply = res.json().get("response", "No response from bot.")
                 else:
