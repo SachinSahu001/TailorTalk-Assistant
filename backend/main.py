@@ -7,7 +7,7 @@ import uvicorn
 
 load_dotenv()
 
-from backend.agent import run_agent
+from agent import run_agent
 
 app = FastAPI()
 
