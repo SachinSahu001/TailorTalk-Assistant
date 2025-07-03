@@ -1,17 +1,14 @@
-# ✅ Use official Python image
+# ✅ Base Image
 FROM python:3.10-slim
 
-# Set environment variables
+# Environment Setup
 ENV PYTHONDONTWRITEBYTECODE=1
 ENV PYTHONUNBUFFERED=1
 
 # Set working directory
 WORKDIR /app
 
-# Install only minimal system dependencies (skip memory-heavy build-essential)
-RUN apt-get update && apt-get install -y gcc
-
-# Install Python dependencies
+# Install pip dependencies only (no system packages)
 COPY requirements.txt .
 RUN pip install --upgrade pip
 RUN pip install -r requirements.txt
@@ -22,5 +19,5 @@ COPY . .
 # Expose port for FastAPI
 EXPOSE 8000
 
-# Run FastAPI app
+# Launch FastAPI
 CMD ["uvicorn", "backend.main:app", "--host", "0.0.0.0", "--port", "8000"]
