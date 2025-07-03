@@ -8,8 +8,8 @@ ENV PYTHONUNBUFFERED=1
 # Set working directory
 WORKDIR /app
 
-# Install system dependencies
-RUN apt-get update && apt-get install -y build-essential
+# Install only minimal system dependencies (skip memory-heavy build-essential)
+RUN apt-get update && apt-get install -y gcc
 
 # Install Python dependencies
 COPY requirements.txt .
